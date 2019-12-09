@@ -15,4 +15,3 @@ class  KlasaDecyzyjna:
 
     def getAttributes(self):
         return self.attributes
-
