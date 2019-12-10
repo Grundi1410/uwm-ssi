@@ -1,6 +1,9 @@
 import re
+import random
 from Decision import Decision
 from Param import Param
+from Classification import Classification
+from Favorization import Favorization
 
 
 def listAttributesAndTheirNumbers(self):
@@ -22,8 +25,6 @@ def splitIntoLines(self):
 
 def delLastColumnAndRow(self):
     for i in range(len(self)):
-        print(len(self[i]))
-        print(self[i][0])
         del self[i][len(self[i]) - 1]
     del self[len(self) - 1]
     return self
@@ -65,6 +66,10 @@ def getIndexOfDecision(array):
 
 def countParam(array, indexOfDecisions, trnArray):
     i = 0
+    listOfDecisions = []
+    for checkOtherDecisions in indexOfDecisions:
+        listOfDecisions.append(checkOtherDecisions.getDecision())
+    favorizationList = []
     listOfParam = []
     for xX in array:
         i += 1
@@ -75,16 +80,139 @@ def countParam(array, indexOfDecisions, trnArray):
             param.setCObjet(decision.getDecision())
             j = 0
             listOfParamCounter = []
-            whichElem=0
+            whichElem = 0
             for elemOfX in xX:
+                if whichElem == len(xX)-1:
+                    continue
                 counter = 0
                 for k in decision.getIndexList():
                     if elemOfX == trnArray[k][whichElem]:
                         counter += 1
-                whichElem+=1
-                listOfParamCounter.append(counter/len(decision.getIndexList()))
-            paramResult = (1/2)*sum(listOfParamCounter)
+                if (counter == 0):
+                    checkIfAllZero = True
+                    for k in range(len(trnArray)-1):
+                        if elemOfX == trnArray[k][whichElem]:
+                            checkIfAllZero = False
+                            break
+
+                    if checkIfAllZero == False:
+                        favorization = Favorization()
+                        favorization.setDecision(decision.getDecision())
+                        favorization.setWhichElem(whichElem)
+                        favorization.setTestObject(param.getTestObject())
+                        favorizationList.append(favorization)
+                whichElem += 1
+                listOfParamCounter.append(counter / len(decision.getIndexList()))
+            paramResult = (1 / 2) * sum(listOfParamCounter)
             param.setParam(paramResult)
             listOfParam.append(param)
+
+    for elem in listOfParam:
+        for favorization in favorizationList:
+            if elem.getTestObject() == favorization.getTestObject() and elem.getCObject() != favorization.getDecision():
+                length = 0
+                for decisionElem in indexOfDecisions:
+                    if decisionElem.getDecision() == elem.getCObject():
+                        length = len(decisionElem.getIndexList())
+                elem.setParam(elem.getParam() + ((1 / 2) * (1 / length)))
     return listOfParam
 
+
+def getGlobalAccuracy(classificationList):
+    sumOfCorrectlyClassified = 0
+    sumOfAllObjects = 0
+    for elem in classificationList:
+        sumOfCorrectlyClassified += elem.getListOfClassifiedCorrectly()
+        sumOfAllObjects += elem.getListOfClassified()
+    return sumOfCorrectlyClassified / sumOfAllObjects
+
+
+def getBalancedAccuracy(allClasses, classificationList):
+    fraction = 0
+    for elem in classificationList:
+        fraction += (elem.getListOfClassifiedCorrectly() / elem.getListOfClassified())
+    return fraction / len(allClasses)
+
+
+def numOfCorrectlyClassified(listOfCountedParams, listOfDecisionsInTST):
+    listOfClassifications = []
+    i = 1
+    listOfParamsInLoop = []
+    properlyClassified = 0
+    classified = 0
+
+    for uDecision in unique(listOfDecisionsInTST):
+        classification = Classification()
+        classification.setCObject(uDecision)
+        classification.setListOfClassified(0)
+        classification.setListOfClassifiedCorrectly(0)
+        listOfClassifications.append(classification)
+
+    enum = 0
+    for countedParam in listOfCountedParams:
+        xObject = "x" + str(i)
+        if xObject == countedParam.getTestObject():
+            listOfParamsInLoop.append(countedParam)
+        if xObject != listOfCountedParams[enum + 1].getTestObject():
+            cObject = ""
+            param = 0
+            for elem in listOfParamsInLoop:
+                if param < elem.getParam():
+                    param = elem.getParam()
+                    cObject = elem.getCObject()
+            if areParamsInLoopEqual(listOfParamsInLoop):
+                randomParam = random.choice(listOfParamsInLoop)
+                if randomParam.getCObject() == listOfDecisionsInTST[i - 1]:
+                    for element in listOfClassifications:
+                        if element.getCObject() == randomParam.getCObject():
+                            element.setListOfClassifiedCorrectly(element.getListOfClassifiedCorrectly() + 1)
+                            element.setListOfClassified(element.getListOfClassified() + 1)
+                else:
+                    for element in listOfClassifications:
+                        if element.getCObject() == randomParam.getCObject():
+                            element.setListOfClassified(element.getListOfClassified() + 1)
+            else:
+                if cObject == listOfDecisionsInTST[i - 1]:
+                    for element in listOfClassifications:
+                        if element.getCObject() == cObject:
+                            element.setListOfClassifiedCorrectly(element.getListOfClassifiedCorrectly() + 1)
+                            element.setListOfClassified(element.getListOfClassified() + 1)
+                else:
+                    for element in listOfClassifications:
+                        if element.getCObject() == cObject:
+                            element.setListOfClassified(element.getListOfClassified() + 1)
+            i += 1
+            listOfParamsInLoop = []
+        enum += 1
+        if enum == len(listOfCountedParams) - 1:
+            enum = 0
+
+    return listOfClassifications
+
+
+def unique(list1):
+    unique_list = []
+    for x in list1:
+        if x not in unique_list:
+            unique_list.append(x)
+    return unique_list
+
+
+def getListOfDecisionsTST(array):
+    result = []
+    for row in array:
+        result.append(row[len(row) - 1])
+    return result
+
+
+def areParamsInLoopEqual(paramsInLoop):
+    x = []
+    for elem in paramsInLoop:
+        x.append(elem.getParam())
+    if len(unique(x)) == 1:
+        return True
+    return False
+
+
+def incrementIfotherObjectEqualsZero():
+    print("a")

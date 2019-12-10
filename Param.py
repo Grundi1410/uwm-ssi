@@ -14,11 +14,11 @@ class  Param:
     def setParam(self, a):
         self.param = a
 
-    def getTestObject(self, a):
+    def getTestObject(self):
         return self.testObject
 
-    def getCObjet(self, a):
+    def getCObject(self):
         return self.cObjet
 
-    def getParam(self, a):
+    def getParam(self):
         return self.param

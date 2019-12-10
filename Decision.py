@@ -15,3 +15,4 @@ class Decision:
 
     def getIndexList(self):
         return self.indexList
+

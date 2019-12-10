@@ -6,10 +6,15 @@ class NaiwnyKlasyfikatorBayesa():
         lines = Common.listAttributesAndTheirNumbers(open("australian_TST.txt").read())
         australianTRNList = Common.listAttributesAndTheirNumbers(open("australian_TRN.txt").read())
         lines = Common.delLastColumnAndRow(lines)
-        columns = Common.switchColumnsToRows(lines)
+        australianTRNList = Common.delLastColumnAndRow(australianTRNList)
+        getTrnDecisions = Common.getIndexOfDecision(australianTRNList)
         getDecisions = Common.getIndexOfDecision(lines)
-        print("abc")
-        x = Common.countParam(lines, getDecisions, australianTRNList)
+        countedParams = Common.countParam(lines, getTrnDecisions, australianTRNList)
+        classified = Common.numOfCorrectlyClassified(countedParams, Common.getListOfDecisionsTST(lines))
+        globalAccuracy = Common.getGlobalAccuracy(classified)
+        allClasses = Common.unique(Common.getListOfDecisionsTST(lines))
+        print("Global accuracy = "+str(globalAccuracy))
+        print("Balanced accuracy = "+str(Common.getBalancedAccuracy(allClasses, classified)))
 
 
 
