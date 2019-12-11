@@ -82,7 +82,7 @@ def countParam(array, indexOfDecisions, trnArray):
             listOfParamCounter = []
             whichElem = 0
             for elemOfX in xX:
-                if whichElem == len(xX)-1:
+                if whichElem == len(xX) - 1:
                     continue
                 counter = 0
                 for k in decision.getIndexList():
@@ -90,7 +90,7 @@ def countParam(array, indexOfDecisions, trnArray):
                         counter += 1
                 if (counter == 0):
                     checkIfAllZero = True
-                    for k in range(len(trnArray)-1):
+                    for k in range(len(trnArray) - 1):
                         if elemOfX == trnArray[k][whichElem]:
                             checkIfAllZero = False
                             break
@@ -134,7 +134,7 @@ def getBalancedAccuracy(allClasses, classificationList):
     return fraction / len(allClasses)
 
 
-def numOfCorrectlyClassified(listOfCountedParams, listOfDecisionsInTST):
+def numOfCorrectlyClassified(listOfCountedParams, listOfDecisionsInTST, textFile):
     listOfClassifications = []
     i = 1
     listOfParamsInLoop = []
@@ -156,28 +156,45 @@ def numOfCorrectlyClassified(listOfCountedParams, listOfDecisionsInTST):
         if xObject != listOfCountedParams[enum + 1].getTestObject():
             cObject = ""
             param = 0
+            highestX = ""
+            listOfParamsInLoopIterator = 0
             for elem in listOfParamsInLoop:
                 if param < elem.getParam():
                     param = elem.getParam()
+                    highestX = elem.getTestObject()
                     cObject = elem.getCObject()
+                    listOfParamsInLoopIterator += 1
+            if listOfParamsInLoopIterator > 1:
+                textFile.write("Param c==" + cObject + "<" + "Param C==" + listOfParamsInLoop[
+                    listOfParamsInLoopIterator - 1].getCObject() + " dla obiektu "+highestX)
+            if listOfParamsInLoopIterator <= 1:
+                textFile.write("Param c==" + cObject + ">" + "Param C==" + listOfParamsInLoop[
+                    listOfParamsInLoopIterator].getCObject() + " dla obiektu "+highestX)
+
+            # textFile.write("Dla "+highestX+" param c=="+cObject+" jest największe\n")
             if areParamsInLoopEqual(listOfParamsInLoop):
                 randomParam = random.choice(listOfParamsInLoop)
                 if randomParam.getCObject() == listOfDecisionsInTST[i - 1]:
+                    textFile.write(" ta decyzja jest zgodna z ukryta decyzja eksperta (decyzja eksperta == "+listOfDecisionsInTST[i - 1]+")\n")
                     for element in listOfClassifications:
                         if element.getCObject() == randomParam.getCObject():
                             element.setListOfClassifiedCorrectly(element.getListOfClassifiedCorrectly() + 1)
                             element.setListOfClassified(element.getListOfClassified() + 1)
+
                 else:
+                    textFile.write(" ta decyzja jest nie zgodna z ukryta decyzja eksperta (decyzja eksperta == "+listOfDecisionsInTST[i - 1]+")\n")
                     for element in listOfClassifications:
                         if element.getCObject() == randomParam.getCObject():
                             element.setListOfClassified(element.getListOfClassified() + 1)
             else:
                 if cObject == listOfDecisionsInTST[i - 1]:
+                    textFile.write(" ta decyzja jest zgodna z ukryta decyzja eksperta (decyzja eksperta == "+listOfDecisionsInTST[i - 1]+")\n")
                     for element in listOfClassifications:
                         if element.getCObject() == cObject:
                             element.setListOfClassifiedCorrectly(element.getListOfClassifiedCorrectly() + 1)
                             element.setListOfClassified(element.getListOfClassified() + 1)
                 else:
+                    textFile.write(" ta decyzja jest nie zgodna z ukryta decyzja eksperta (decyzja eksperta == "+listOfDecisionsInTST[i - 1]+")\n")
                     for element in listOfClassifications:
                         if element.getCObject() == cObject:
                             element.setListOfClassified(element.getListOfClassified() + 1)
