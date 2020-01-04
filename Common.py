@@ -167,7 +167,9 @@ def numOfCorrectlyClassified(listOfCountedParams, listOfDecisionsInTST, textFile
         xObject = "x" + str(i)
         if xObject == countedParam.getTestObject():
             listOfParamsInLoop.append(countedParam)
-        if xObject != listOfCountedParams[enum + 1].getTestObject():
+
+        if xObject != listOfCountedParams[enum + 1].getTestObject() or \
+                len(listOfDecisionsInTST) == 1 and len(listOfParamsInLoop) == 2:
             cObject = ""
             param = 0
             highestX = ""
@@ -178,12 +180,13 @@ def numOfCorrectlyClassified(listOfCountedParams, listOfDecisionsInTST, textFile
                     highestX = elem.getTestObject()
                     cObject = elem.getCObject()
                     listOfParamsInLoopIterator += 1
+
             if listOfParamsInLoopIterator > 1:
-                textFile.write("Param c==" + cObject + "<" + "Param C==" + listOfParamsInLoop[
-                    listOfParamsInLoopIterator - 1].getCObject() + " dla obiektu " + highestX)
+                textFile.write("Param c==" + listOfParamsInLoop[0].getCObject() + "<" + "Param C==" + listOfParamsInLoop[
+                    len(listOfParamsInLoop)-1].getCObject() + " dla obiektu " + highestX)
             if listOfParamsInLoopIterator <= 1:
-                textFile.write("Param c==" + cObject + ">" + "Param C==" + listOfParamsInLoop[
-                    listOfParamsInLoopIterator].getCObject() + " dla obiektu " + highestX)
+                textFile.write("Param c==" + listOfParamsInLoop[0].getCObject() + ">" + "Param C==" + listOfParamsInLoop[
+                    len(listOfParamsInLoop)-1].getCObject() + " dla obiektu " + highestX)
 
             # textFile.write("Dla "+highestX+" param c=="+cObject+" jest największe\n")
             if areParamsInLoopEqual(listOfParamsInLoop):
@@ -252,9 +255,57 @@ def areParamsInLoopEqual(paramsInLoop):
 def incrementIfotherObjectEqualsZero():
     print("a")
 
+def louFromIndexToList(index, list):
+    result = []
+    result.append(list[index])
+    return result
 
 def fromIndexToList(indexList, list):
     result = []
     for i in indexList:
         result.append(list[i])
     return result
+
+def splitIntoNPartsLOU(array, kParts):
+    kPartLen = len(array) / kParts
+    indexList = []
+
+    for i in range(kParts):
+        indexForParts = []
+        j = 0
+        while j < int(kPartLen):
+            rand = random.randint(0, len(array) - 1)
+            otherPartsContains = False
+            for elem in indexList:
+                if elem.__contains__(rand):
+                    otherPartsContains = True
+
+            if (not indexForParts.__contains__(rand) and otherPartsContains == False):
+                indexForParts.append(rand)
+            else:
+                j -= 1
+            j += 1
+        indexList.append(indexForParts)
+    return indexList
+
+def splitIntoKParts(array, kParts):
+    kPartLen = len(array)/kParts
+    indexList=[]
+
+    for i in range(kParts):
+        indexForParts = []
+        j = 0
+        while j < int(kPartLen):
+            rand = random.randint(0, len(array) - 1)
+            otherPartsContains = False
+            for elem in indexList:
+                if elem.__contains__(rand):
+                    otherPartsContains = True
+
+            if (not indexForParts.__contains__(rand) and otherPartsContains == False):
+                indexForParts.append(rand)
+            else:
+                j -= 1
+            j += 1
+        indexList.append(indexForParts)
+    return indexList

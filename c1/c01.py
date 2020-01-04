@@ -1,5 +1,6 @@
 import math
 import re
+import Common
 from KlasaDecyzyjna import KlasaDecyzyjna
 
 
@@ -107,6 +108,12 @@ def main():
                                                            open("australian.txt").read()))
     SystemDecyzyjny.numberOfAttributesInClass(classes, SystemDecyzyjny.switchColumnsToRows(
         SystemDecyzyjny.listAttributesAndTheirNumbers(open("australian.txt").read())))
+    for elem in classes:
+        print("Różne wartości dla decyzji "+ elem.getKlasaDecyzyjna()+": ")
+        print(*Common.unique(elem.getAttributes()))
+    for elem in classes:
+        print("Wszystkie wartości dla decyzji "+ elem.getKlasaDecyzyjna()+": ")
+        print(*elem.getAttributes())
     SystemDecyzyjny.standardDeviation(classes, SystemDecyzyjny.getNumericAttributes(array))
 
 
