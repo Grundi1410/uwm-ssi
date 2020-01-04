@@ -10,7 +10,7 @@ class NaiwnyKlasyfikatorBayesa():
         australianTRNList = Common.delLastColumnAndRow(australianTRNList)
         getTrnDecisions = Common.getIndexOfDecision(australianTRNList)
         getDecisions = Common.getIndexOfDecision(lines)
-        countedParams = Common.countParam(lines, getTrnDecisions, australianTRNList)
+        countedParams = Common.countParam(lines, australianTRNList)
         classified = Common.numOfCorrectlyClassified(countedParams, Common.getListOfDecisionsTST(lines), fDec)
         globalAccuracy = Common.getGlobalAccuracy(classified)
         allClasses = Common.unique(Common.getListOfDecisionsTST(lines))

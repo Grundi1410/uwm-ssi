@@ -64,8 +64,9 @@ def getIndexOfDecision(array):
     return result
 
 
-def countParam(array, indexOfDecisions, trnArray):
+def countParam(array, trnArray):
     i = 0
+    indexOfDecisions = getIndexOfDecision(trnArray)
     listOfDecisions = []
     for checkOtherDecisions in indexOfDecisions:
         listOfDecisions.append(checkOtherDecisions.getDecision())
@@ -78,7 +79,6 @@ def countParam(array, indexOfDecisions, trnArray):
             param = Param()
             param.setTestObject("x" + str(i))
             param.setCObjet(decision.getDecision())
-            j = 0
             listOfParamCounter = []
             whichElem = 0
             for elemOfX in xX:
@@ -88,6 +88,20 @@ def countParam(array, indexOfDecisions, trnArray):
                 for k in decision.getIndexList():
                     if elemOfX == trnArray[k][whichElem]:
                         counter += 1
+
+                # check if other c has 0 objects
+                # if true counter += 1
+                incrementByOne = True
+                for elem in indexOfDecisions:
+                    if elem.getDecision() != decision.getDecision():
+                        for j in elem.getIndexList():
+                            if elemOfX == trnArray[j][whichElem] or counter == 0:
+                                incrementByOne = False
+                                break
+
+                if (incrementByOne == True):
+                    counter += 1
+
                 if (counter == 0):
                     checkIfAllZero = True
                     for k in range(len(trnArray) - 1):
@@ -103,7 +117,7 @@ def countParam(array, indexOfDecisions, trnArray):
                         favorizationList.append(favorization)
                 whichElem += 1
                 listOfParamCounter.append(counter / len(decision.getIndexList()))
-            paramResult = (1 / 2) * sum(listOfParamCounter)
+            paramResult = (len(decision.getIndexList()) / len(trnArray)) * sum(listOfParamCounter)
             param.setParam(paramResult)
             listOfParam.append(param)
 
@@ -166,35 +180,39 @@ def numOfCorrectlyClassified(listOfCountedParams, listOfDecisionsInTST, textFile
                     listOfParamsInLoopIterator += 1
             if listOfParamsInLoopIterator > 1:
                 textFile.write("Param c==" + cObject + "<" + "Param C==" + listOfParamsInLoop[
-                    listOfParamsInLoopIterator - 1].getCObject() + " dla obiektu "+highestX)
+                    listOfParamsInLoopIterator - 1].getCObject() + " dla obiektu " + highestX)
             if listOfParamsInLoopIterator <= 1:
                 textFile.write("Param c==" + cObject + ">" + "Param C==" + listOfParamsInLoop[
-                    listOfParamsInLoopIterator].getCObject() + " dla obiektu "+highestX)
+                    listOfParamsInLoopIterator].getCObject() + " dla obiektu " + highestX)
 
             # textFile.write("Dla "+highestX+" param c=="+cObject+" jest największe\n")
             if areParamsInLoopEqual(listOfParamsInLoop):
                 randomParam = random.choice(listOfParamsInLoop)
                 if randomParam.getCObject() == listOfDecisionsInTST[i - 1]:
-                    textFile.write(" ta decyzja jest zgodna z ukryta decyzja eksperta (decyzja eksperta == "+listOfDecisionsInTST[i - 1]+")\n")
+                    textFile.write(" ta decyzja jest zgodna z ukryta decyzja eksperta (decyzja eksperta == " +
+                                   listOfDecisionsInTST[i - 1] + ")\n")
                     for element in listOfClassifications:
                         if element.getCObject() == randomParam.getCObject():
                             element.setListOfClassifiedCorrectly(element.getListOfClassifiedCorrectly() + 1)
                             element.setListOfClassified(element.getListOfClassified() + 1)
 
                 else:
-                    textFile.write(" ta decyzja jest nie zgodna z ukryta decyzja eksperta (decyzja eksperta == "+listOfDecisionsInTST[i - 1]+")\n")
+                    textFile.write(" ta decyzja jest nie zgodna z ukryta decyzja eksperta (decyzja eksperta == " +
+                                   listOfDecisionsInTST[i - 1] + ")\n")
                     for element in listOfClassifications:
                         if element.getCObject() == randomParam.getCObject():
                             element.setListOfClassified(element.getListOfClassified() + 1)
             else:
                 if cObject == listOfDecisionsInTST[i - 1]:
-                    textFile.write(" ta decyzja jest zgodna z ukryta decyzja eksperta (decyzja eksperta == "+listOfDecisionsInTST[i - 1]+")\n")
+                    textFile.write(" ta decyzja jest zgodna z ukryta decyzja eksperta (decyzja eksperta == " +
+                                   listOfDecisionsInTST[i - 1] + ")\n")
                     for element in listOfClassifications:
                         if element.getCObject() == cObject:
                             element.setListOfClassifiedCorrectly(element.getListOfClassifiedCorrectly() + 1)
                             element.setListOfClassified(element.getListOfClassified() + 1)
                 else:
-                    textFile.write(" ta decyzja jest nie zgodna z ukryta decyzja eksperta (decyzja eksperta == "+listOfDecisionsInTST[i - 1]+")\n")
+                    textFile.write(" ta decyzja jest nie zgodna z ukryta decyzja eksperta (decyzja eksperta == " +
+                                   listOfDecisionsInTST[i - 1] + ")\n")
                     for element in listOfClassifications:
                         if element.getCObject() == cObject:
                             element.setListOfClassified(element.getListOfClassified() + 1)
@@ -233,3 +251,10 @@ def areParamsInLoopEqual(paramsInLoop):
 
 def incrementIfotherObjectEqualsZero():
     print("a")
+
+
+def fromIndexToList(indexList, list):
+    result = []
+    for i in indexList:
+        result.append(list[i])
+    return result
